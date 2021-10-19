@@ -16,7 +16,7 @@ function redirect_to($url){
   exit;
 }
 
-function get_get($name){ 
+function get_get($name){ // (使われている？)
   if(isset($_GET[$name]) === true){
     return $_GET[$name];
   };
