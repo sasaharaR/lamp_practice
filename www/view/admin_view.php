@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <!-- 定数VIEW_PATHのtemplates/head.phpファイルを読み込み -->
   <?php include VIEW_PATH . 'templates/head.php'; ?>
   <title>商品管理</title>
-  <link rel="stylesheet" href="<?php print(STYLESHEET_PATH . 'admin.css'); ?>">
+  <!-- 定数STYLESHEET_PATHのadmin.cssファイルを読み込み -->
+  <link rel="stylesheet" href="<?php print (STYLESHEET_PATH . 'admin.css'); ?>">
 </head>
 <body>
   <?php 
+  // 定数VIEW_PATHのtemplates/header_logined.phpファイルを読み込み
   include VIEW_PATH . 'templates/header_logined.php'; 
   ?>
 
   <div class="container">
     <h1>商品管理</h1>
-
+    <!-- 定数VIEW_PATHのtemplates/messages.phpファイルを読み込み -->
     <?php include VIEW_PATH . 'templates/messages.php'; ?>
 
     <form 
@@ -45,9 +48,10 @@
       </div>
       
       <input type="submit" value="商品追加" class="btn btn-primary">
+      <input type="hidden" name="csrf_token" value="<?php print h($token); ?>">
     </form>
 
-
+    <!-- データベースに登録された商品が一つでもあれば表示 -->
     <?php if(count($items) > 0){ ?>
       <table class="table table-bordered text-center">
         <thead class="thead-light">
@@ -61,19 +65,21 @@
         </thead>
         <tbody>
           <?php foreach($items as $item){ ?>
-          <tr class="<?php print(is_open($item) ? '' : 'close_item'); ?>">
-            <td><img src="<?php print(IMAGE_PATH . $item['image']);?>" class="item_image"></td>
-            <td><?php print($item['name']); ?></td>
-            <td><?php print(number_format($item['price'])); ?>円</td>
+            <!-- 三項演算子、ステータスが1(公開）の場合からの値、0(非公開)の場合cssのclose_item(灰色っぽくなる)を反映させる　-->
+          <tr class="<?php print h(is_open($item) ? '' : 'close_item'); ?>">
+            <td><img src="<?php print h(IMAGE_PATH . $item['image']);?>" class="item_image"></td>
+            <td><?php print h($item['name']); ?></td>
+            <td><?php print h(number_format($item['price'])); ?>円</td>
             <td>
               <form method="post" action="admin_change_stock.php">
                 <div class="form-group">
                   <!-- sqlインジェクション確認のためあえてtext -->
-                  <input  type="text" name="stock" value="<?php print($item['stock']); ?>">
+                  <input  type="text" name="stock" value="<?php print h($item['stock']); ?>">
                   個
                 </div>
                 <input type="submit" value="変更" class="btn btn-secondary">
-                <input type="hidden" name="item_id" value="<?php print($item['item_id']); ?>">
+                <input type="hidden" name="item_id" value="<?php print h($item['item_id']); ?>">
+                <input type="hidden" name="csrf_token" value="<?php print h($token); ?>">
               </form>
             </td>
             <td>
@@ -82,16 +88,19 @@
                 <?php if(is_open($item) === true){ ?>
                   <input type="submit" value="公開 → 非公開" class="btn btn-secondary">
                   <input type="hidden" name="changes_to" value="close">
+                  <input type="hidden" name="csrf_token" value="<?php print h($token); ?>">
                 <?php } else { ?>
                   <input type="submit" value="非公開 → 公開" class="btn btn-secondary">
                   <input type="hidden" name="changes_to" value="open">
+                  <input type="hidden" name="csrf_token" value="<?php print h($token); ?>">
                 <?php } ?>
-                <input type="hidden" name="item_id" value="<?php print($item['item_id']); ?>">
+                <input type="hidden" name="item_id" value="<?php print h($item['item_id']); ?>">
               </form>
 
               <form method="post" action="admin_delete_item.php">
                 <input type="submit" value="削除" class="btn btn-danger delete">
-                <input type="hidden" name="item_id" value="<?php print($item['item_id']); ?>">
+                <input type="hidden" name="item_id" value="<?php print h($item['item_id']); ?>">
+                <input type="hidden" name="csrf_token" value="<?php print h($token); ?>">
               </form>
 
             </td>
