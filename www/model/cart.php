@@ -204,36 +204,34 @@ function validate_cart_purchase($carts){
   return true;
 }
 
-function purchase_history($db, $user_id, $item_id, $amount){
+function purchase_history($db, $user_id){
 // 購入履歴を登録するSQL文
   $sql = "
     INSERT INTO
       purchase_history(
-        user_id,
-        item_id,
-        amount
+        user_id
       )
-    VALUES(?, ?, ?)    
+    VALUES(?)    
   ";
   // プレースホルダ用、executeに渡すので配列にする
-  $params = array($user_id, $item_id, $amount);
+  $params = array($user_id);
   // SQLを実行
   return execute_query($db, $sql, $params);
 }
 
-function purchase_detail($db, $item_name, $att_price, $amount){
+function purchase_detail($db, $item_id, $att_price, $amount){
   // 購入明細を登録するSQL文
     $sql = "
       INSERT INTO
         purchase_detail(
-          item_name,
+          item_id,
           att_price,
           amount
         )
       VALUES(?, ?, ?)    
     ";
     // プレースホルダ用、executeに渡すので配列にする
-    $params = array($item_name, $att_price, $amount);
+    $params = array($item_id, $att_price, $amount);
     // SQLを実行
     return execute_query($db, $sql, $params);
   }

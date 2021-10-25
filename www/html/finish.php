@@ -45,9 +45,9 @@ $db->beginTransaction();
   purchase_carts($db, $carts);
   foreach($carts as $cart){
     // 購入履歴を登録
-    if(purchase_history($db, $cart['user_id'], $cart['item_id'], $cart['amount'])
+    if(purchase_history($db, $cart['user_id'])
     // 購入明細を登録
-    && purchase_detail($db, $cart['name'], $cart['price'], $cart['amount'])) {
+    && purchase_detail($db, $cart['item_id'], $cart['price'], $cart['amount'])) {
 // 上記3つが成功した場合
 $db->commit();
 // カート内の商品の合計金額を代入
