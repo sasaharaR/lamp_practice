@@ -38,14 +38,29 @@ if(is_valid_csrf_token($_POST['csrf_token']) === false){
     $token = get_csrf_token();
 }
 
+
+// トランザクション開始
+$db->beginTransaction();
 // カートに商品が入っていること、公開ステータス、在庫数に問題ないかチェック
-if(purchase_carts($db, $carts) === false){
-  // どれか一つでも問題があればエラーメッセージ
-  set_error('商品が購入できませんでした。');
-  // カートページに遷移(戻る)
-  redirect_to(CART_URL);
-} 
+  purchase_carts($db, $carts);
+  foreach($carts as $cart){
+    // 購入履歴を登録
+    if(purchase_history($db, $cart['user_id'], $cart['item_id'], $cart['amount'])
+    // 購入明細を登録
+    && purchase_detail($db, $cart['name'], $cart['price'], $cart['amount'])) {
+// 上記3つが成功した場合
+$db->commit();
 // カート内の商品の合計金額を代入
 $total_price = sum_carts($carts);
+    } else {
+        // そうでない場合ロールバック
+        $db->rollback();
+        // どれか一つでも問題があればエラーメッセージ
+        set_error('商品が購入できませんでした。');
+        // カートページに遷移(戻る)
+        redirect_to(CART_URL);
+    }
+  }
+
 // 定数VIEW_PATH(viewディレクトリ)のfinish_view.phpファイル読み込み
 include_once '../view/finish_view.php';
