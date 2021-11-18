@@ -54,6 +54,7 @@ try {
     // 購入処理、在庫の更新、カートの削除
     purchase_carts($db, $carts);
     }
+    
     // コミット
     $db->commit();
     // カート内の合計金額を代入
