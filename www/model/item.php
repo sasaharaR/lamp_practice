@@ -282,3 +282,29 @@ function is_valid_item_status($status){
   // is_validを返す
   return $is_valid;
 }
+
+
+function ranking_3($db){
+// ランキング機能
+$sql = "
+SELECT
+  ROW_NUMBER() OVER(ORDER BY SUM(amount) DESC) AS rank,
+  purchase_detail.item_id,
+  SUM(purchase_detail.amount),
+  items.name,
+  items.image
+FROM
+  purchase_detail
+JOIN
+  items  
+ON
+  purchase_detail.item_id = items.item_id
+GROUP BY
+  item_id
+ORDER BY
+  SUM(amount) DESC
+LIMIT 3
+";
+// 返り値としてfetchAllで結果を取得して返す
+return fetch_all_query($db, $sql);
+}

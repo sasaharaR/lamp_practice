@@ -43,6 +43,20 @@
       </div>
     </div>
   </div>
+
+
+  <tbody class="item">
+    <?php foreach($rank3 as $rank){ ?>
+    <tr>
+      <td><?php print h($rank['rank']); ?>位</td>
+      <td><?php print h($rank['name']); ?></td>
+      <td>
+        <figure class="card-body">
+              <img class="card-img" src="<?php print h(IMAGE_PATH . $rank['image']); ?>">
+        </figure>    
+      </td>
+    <?php } ?>
+  </tbody>
   
 </body>
 </html>
