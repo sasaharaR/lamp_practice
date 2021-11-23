@@ -1,13 +1,10 @@
 <?php
-// 商品一覧ページ
 // const.php(定数ファイル)を読み込み
 require_once '../conf/const.php';
 // 定数MODEL_PATH(modelディレクトリ)のfunctions.phpファイルを読み込み
 require_once MODEL_PATH . 'functions.php';
 // 定数MODEL_PATH(modelディレクトリ)のuser.phpファイルを読み込み
 require_once MODEL_PATH . 'user.php';
-// 定数MODEL_PATH(modelディレクトリ)のitem.phpファイルを読み込み
-require_once MODEL_PATH . 'item.php';
 
 // ログインチェックのためセッション開始
 session_start();
@@ -23,12 +20,18 @@ $token = get_csrf_token();
 
 // データベースに接続
 $db = get_db_connect();
-// データベースからユーザIDを参照してユーザー情報を取得する
+// データベースからユーザIDを参照してユーザー情報を取得
 $user = get_login_user($db);
-// データベースからステータスを参照して公開されている商品情報を取得する
-$items = get_open_items($db);
-// ランキング
-$rank3 = ranking_3($db);
 
-// 定数VIEW_PATH(viewディレクトリ)のindex_view.phpファイル読み込み
-include_once VIEW_PATH . 'index_view.php';
+// user_idの履歴を取得
+// ログインしたユーザーのタイプが１(管理者)だった場合
+if ($user['type'] === USER_TYPE_ADMIN){
+  // 全ての購入履歴を取得
+  $history = get_history_admin($db);
+} else {
+// そうじゃない場合ユーザーの購入履歴を取得
+  $history = get_histories($db, $user['user_id']);
+}
+
+// 定数VIEW_PATH(viewディレクトリ)のhistory_view.phpファイル読み込み 
+include_once VIEW_PATH . 'history_view.php';

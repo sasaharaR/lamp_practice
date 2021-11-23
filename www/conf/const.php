@@ -39,6 +39,10 @@ define('CART_URL', '/cart.php');
 define('FINISH_URL', '/finish.php');
 // 商品管理ページのパスを定数ADMIN_URLに設定
 define('ADMIN_URL', '/admin.php');
+// 購入履歴ページのパスを定数HISTORY_URLに設定
+define('HISTORY_URL', '/history.php');
+// 購入明細ページのパスを定数DETAIL_URLに設定
+define('DETAIL_URL', '/detail.php');
 
 // 半角の英数字のみ
 define('REGEXP_ALPHANUMERIC', '/\A[0-9a-zA-Z]+\z/');

@@ -160,3 +160,110 @@ function insert_user($db, $name, $password){
   return execute_query($db, $sql, $params);
 }
 
+// 選択した履歴を取得
+function get_history($db, $history_id){
+  // 合計金額を取得するために購入明細のテーブルと結合(SUMを使う)
+  $sql = "
+  SELECT
+    purchase_history.history_id,
+    purchase_history.create_datetime,
+    SUM(purchase_detail.att_price * purchase_detail.amount) AS total_price
+  FROM
+    purchase_history
+  JOIN
+    purchase_detail
+  ON
+    purchase_history.history_id = purchase_detail.history_id
+  WHERE
+    purchase_history.history_id = ?
+  GROUP BY
+    purchase_history.history_id  
+  ";
+  // プレースホルダ用、executeに渡すので配列にする
+  $params = array($history_id);
+  // SQLを実行して結果をfetchで取得
+  return fetch_query($db, $sql, $params);
+}
+
+// 通常ユーザー用
+function get_histories($db, $user_id){
+  // 合計金額を取得するために購入明細のテーブルと結合(SUMを使う)
+  // 注文番号でグループ化してDESCで日時が新しい順に取得
+  $sql = "
+    SELECT
+      purchase_history.history_id,
+      purchase_history.create_datetime,
+      SUM(purchase_detail.att_price * purchase_detail.amount) AS total_price
+    FROM
+      purchase_history
+    JOIN
+      purchase_detail
+    ON
+      purchase_history.history_id = purchase_detail.history_id
+    WHERE
+      user_id = ?
+    GROUP BY
+      history_id
+    ORDER BY
+      create_datetime desc 
+    ";
+  // プレースホルダ用、executeに渡すので配列にする
+  $params = array($user_id);
+  // SQLを実行して結果をfetchで取得
+  return fetch_all_query($db, $sql, $params);
+}
+
+// 管理者用
+function get_history_admin($db){
+  // 合計金額を取得するために購入明細のテーブルと結合(SUMを使う)
+  // 注文番号でグループ化してDESCで日時が新しい順に取得
+  $sql = "
+    SELECT
+      purchase_history.history_id,
+      purchase_history.create_datetime,
+      SUM(purchase_detail.att_price * purchase_detail.amount) AS total_price
+    FROM
+      purchase_history
+    JOIN
+      purchase_detail
+    ON
+      purchase_history.history_id = purchase_detail.history_id
+    GROUP BY
+      history_id
+    ORDER BY
+      create_datetime desc 
+    ";
+  // プレースホルダ用、executeに渡すので配列にする
+  $params = array();
+  // SQLを実行して結果をfetchで取得
+  return fetch_all_query($db, $sql, $params);
+}
+
+// 購入明細
+function get_detail($db, $history_id){
+  $sql = "
+    SELECT
+      purchase_detail.att_price,
+      purchase_detail.amount,
+      purchase_detail.create_datetime,
+      SUM(purchase_detail.att_price * purchase_detail.amount) AS total_price,
+      items.name
+    FROM
+      purchase_detail
+    JOIN
+      items
+    ON
+      purchase_detail.item_id = items.item_id
+    WHERE
+      history_id = ?
+    GROUP BY
+      purchase_detail.att_price,
+      purchase_detail.amount,
+      purchase_detail.create_datetime,
+      items.name
+  ";
+  // プレースホルダ用、executeに渡すので配列にする
+  $params = array($history_id);
+  // SQLを実行して結果をfetchで取得
+  return fetch_all_query($db, $sql, $params);
+}
